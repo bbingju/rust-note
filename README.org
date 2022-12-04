@@ -1,0 +1,43 @@
+#+TITLE: Rust Note
+#+AUTHOR: Phil Hwang
+#+EMAIL: pjhwang@gmail.com
+
+#+SETUPFILE: theme-readtheorg.setup
+#+STARTUP: show2levels
+
+#+LATEX_COMPILER: xelatex
+#+LATEX_CLASS: article
+#+LATEX_CLASS_OPTIONS: [a4paper,11pt]
+#+LATEX_HEADER: \usepackage{kotex}
+#+LATEX_HEADER: \usepackage{a4wide}
+#+LATEX_HEADER: \usepackage{listings}
+# #+LATEX_HEADER: \usepackage{minted}
+# #+LaTeX_HEADER: \setmainhangulfont{HCR Batang LVT}
+#+LATEX_HEADER: \setmainhangulfont{Noto Sans CJK KR}
+
+* 개발환경
+
+간단한 코드 테스트는 [[https://play.rust-lang.org/][Rust Playground]]에서 할 수 있다.
+
+** Emacs
+*** LSP
+*** Tree sitter
+
+* Syntax
+
+* Projects
+
+** [[https://github.com/sharkdp/bat.git][bat]]
+
+** [[https://github.com/ClementTsang/bottom][bottom]]
+
+** [[https://github.com/ogham/dog][dog]]
+
+** [[https://github.com/bootandy/dust][dust]]
+
+** [[https://github.com/ogham/exa][exa]]
+
+* See Also
+- [[https://doc.rust-lang.org/][Rust Documentations]]
+- [[https://play.rust-lang.org/][Rust Playground]]
+- [[https://www.youtube.com/watch?v=W9DO6m8JSSs&list=PLfllocyHVgsSJf1zO6k6o3SX2mbZjAqYE][{Youtube} Easy Rust Korean 재생목록]]
