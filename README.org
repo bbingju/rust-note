@@ -105,7 +105,47 @@ Tuple은 괄호'~()~'를 사용한다.
 
 ** ~match~ 문
 
-** Underbar '~_~'의 쓰임새
+~switch~ 문과 비슷한 기능을 하지만 더 편리하다.
+
+#+begin_src rust :results output :exports both
+  fn main() {
+      let sky = "clear";
+      let temperature = "warm";
+
+      // 다중 상태를 체크할 수 있다. 이 때는 tuple 사용.
+      match (sky, temperature) {
+          ("cloudy", "cold") => println!("It's a bad day."),
+          ("cloudy", "warm") => println!("It's a blue day."),
+          ("cloudy", _) => println!("It's a cloudy day."),
+          _ => println!("Not sure what the weather is.")
+      }
+  }
+#+end_src
+
+#+RESULTS:
+: Not sure what the weather is.
+
+~if~ 문을 같이 쓰는 경우:
+
+#+begin_src rust :results output :exports both
+  fn main() {
+      let children = 5;
+      let married = true;
+
+      match (children, married) {
+          (children, married) if !married => println!("Not married with {} children", children),
+          (c, m) if c == 0 && m => println!("Married with no child"),
+          _ => println!("Some other type of marriage an children combination")
+      }
+  }
+#+end_src
+
+#+RESULTS:
+: Some other type of marriage an children combination
+
+
+
+** 언더바 '~_~'의 쓰임새
 
 '나머지 것' 혹은 '쓰이지 않음' 등의 의미로 쓰인다.
 
@@ -142,6 +182,28 @@ Tuple은 괄호'~()~'를 사용한다.
 #+RESULTS:
 : a is "hello"
 : b is [1, 2, 3]
+
+** 골뱅이 '~@~'의 쓰임새
+
+뭔가 구체적으로 더 기술해야할 때 사용될 수 있다. 예를 들어 ~match~ 문에서:
+
+#+begin_src rust :results output :exports both
+  fn match_number(input: i32) {
+      match input {
+          number @ 0..=10 => println!("It's between 0 and 10. It's the number {}", number),
+          _ => println!("It's greater than ten" )
+      }
+  }
+
+  fn main() {
+      match_number(10);
+      match_number(23);
+  }
+#+end_src
+
+#+RESULTS:
+: It's between 0 and 10. It's the number 10
+: It's greater than ten
 
 ** Traits
 
