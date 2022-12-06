@@ -24,7 +24,7 @@
 
 *** Command Line Tools
 
-유닉스 계열 운영체제는 다음과 같이 [[https://static.rust-lang.org/rustup/rustup-init.sh][=rustup-init.sh=]] 스크립트를 내려받은 후 실행시켜 설치할 수 있다.
+유닉스 계열 운영체제는 다음과 같이 [[https://static.rust-lang.org/rustup/rustup-init.sh][rustup-init.sh]] 스크립트를 내려받은 후 실행시켜 설치할 수 있다.
 
 #+ATTR_LATEX: :options frame=single
 #+begin_src shell
@@ -59,7 +59,42 @@
 
 *** Emacs
 
-Emacs로 Rust 언어를 프로그래밍 하는 기본적인 방법은 [[https://github.com/rust-lang/rust-mode][=rust-mode=]] 을 설치하는 것이다. 필요할 경우, [[https://emacs-lsp.github.io/lsp-mode/page/lsp-rust-analyzer/][LSP Mode]]나 [[https://emacs-tree-sitter.github.io/][tree-sitter]]를 고민해 볼 수 있다.
+Emacs로 Rust 언어를 프로그래밍 하는 기본적인 방법은 [[https://github.com/rust-lang/rust-mode][rust-mode]] 을 설치하는 것이다. 필요할 경우, [[https://emacs-lsp.github.io/lsp-mode/page/lsp-rust-analyzer/][LSP Mode]]나 [[https://emacs-tree-sitter.github.io/][tree-sitter]]를 고민해 볼 수 있다.
+
+* Data Types
+
+- Scalar와 compound로 나뉨.
+- Scalar는 한개짜리 값을 의미하는데, integers, floating-point numbers, Booleans, 문자열이 여기에 속함.
+- Integer type에 ~isize~, ~usize~ 라는 것이 있음.
+- Integer literal은 다음과 같이 표기함
+
+  #+NAME: Integer Literals in Rust
+  | Number literals  | Example       |
+  |------------------+---------------|
+  | Decimal          | =98_222=      |
+  | Hex              | =0xff=        |
+  | Octal            | =0o77=        |
+  | Binary           | =0b1111_0000= |
+  | Byte (~u8~ only) | =b'A'=        |
+
+
+** Tuple
+
+Tuple은 괄호'~()~'를 사용한다.
+
+#+begin_src rust results: output :exports both
+  fn main() {
+      let empty_tuple = ();		// 빈 투플
+      let my_tuple = ( 23, "test tuple", vec![34, 23, 9] );
+
+      println!("empty tuple: {:?}, my_tuple.0: {:}, my_tuple.1: {:?}",
+               empty_tuple, my_tuple.0, my_tuple.1);
+  }
+
+#+end_src
+
+#+RESULTS:
+: empty tuple: (), my_tuple.0: 23, my_tuple.1: "test tuple"
 
 * 사실들
 
@@ -67,6 +102,50 @@ Emacs로 Rust 언어를 프로그래밍 하는 기본적인 방법은 [[https://
 
 - 둘 다 변하지 않는 값을 표현하는 방식이지만, Constants는 ~mut~ 을 붙여서 mutable 하게 만들 수 없음.
 - Constants는 ~let~ 을 쓸 수 없고 ~const~ 를 붙이며, 해당 값의 타입은 항상 annotate 해야함.
+
+** ~match~ 문
+
+** Underbar '~_~'의 쓰임새
+
+'나머지 것' 혹은 '쓰이지 않음' 등의 의미로 쓰인다.
+
+*** ~match~ 문에서 사용예
+
+#+begin_src rust :results output :exports both
+  fn main() {
+
+      let a_num = 9;
+
+      match a_num {
+          0 => println!("It's a zero"),
+          1 => println!("It's a one"),
+          _ => println!("It's an unknown number")
+      }
+  }
+#+end_src
+
+#+RESULTS:
+: It's an unknown number
+
+*** tuple의 item을 각 변수로 맵핑할 때
+
+#+begin_src rust :results output :exports both
+  fn main() {
+      let a_tuple = ( "hello", 9292, vec![1, 2, 3]);
+      let (a, _, b) = a_tuple;
+
+      println!("a is {:?}", a);
+      println!("b is {:?}", b);
+  }
+#+end_src
+
+#+RESULTS:
+: a is "hello"
+: b is [1, 2, 3]
+
+** Traits
+
+다른 언어에서 interface라 일컬어지는 것과 비슷한 면이 있다. [[https://doc.rust-lang.org/book/ch10-02-traits.html][책]]참고.
 
 * Projects
 
