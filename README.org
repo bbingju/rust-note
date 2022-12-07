@@ -2,7 +2,7 @@
 #+AUTHOR: Phil Hwang
 #+EMAIL: pjhwang@gmail.com
 
-#+SETUPFILE: theme-readtheorg.setup
+#+SETUPFILE: https://fniessen.github.io/org-html-themes/org/theme-readtheorg.setup
 #+STARTUP: show2levels
 
 #+LATEX_COMPILER: xelatex
@@ -95,6 +95,250 @@ Tuple은 괄호'~()~'를 사용한다.
 
 #+RESULTS:
 : empty tuple: (), my_tuple.0: 23, my_tuple.1: "test tuple"
+
+** Enums
+Enums는 C/C++와 같이 표현된다.
+
+#+begin_src rust
+  enum IpAddrKind {
+      V4,
+      V6,
+  }
+#+end_src
+
+그리고 이것을 쓰는 방식은 아래와 같다.
+
+#+begin_src rust
+  let four = IpAddrKind::V4;
+  let six = IpAddrKind::V6;
+#+end_src
+
+**팁**: ~use~ 문을 써서 버거로움을 줄일 수 있다.
+
+#+begin_src rust
+  use IpAddrKind::*;
+
+  let four = V4;
+  let six = V6;
+#+end_src
+
+
+함수의 인자는 다른 변수를 다룰 때와 같이 사용할 수 있다.
+
+#+begin_src rust
+  fn route(ip_kind: IpAddrKind) {}
+#+end_src
+
+
+여기서 우리가 두 주소체계를 모두 표현하는 하나의 구조체를 만든다고 가정하고 C 스타일로 정의한다면 아마 다음과 같이 할 수 있을 것이다.
+
+#+begin_src rust
+  enum IpAddrKind {
+      V4,
+      V6,
+  }
+
+  struct IpAddr {
+      kind: IpAddrKind,
+      address: String,
+  }
+
+  let home = IpAddr {
+      kind: IpAddrKind::V4,
+      address: String::from("127.0.0.1"),
+  };
+
+  let loopback = IpAddr {
+      kind: IpAddrKind::V4,
+      address: String::from("::1"),
+  };
+#+end_src
+
+하지만 Rust에서는 이것을 enum 만으로 더 간편하게 표시할 수 있다.
+
+#+begin_src rust
+  enum IpAddr {
+      V4(String),
+      V6(String),
+  }
+
+  let home = IpAddr::V4(String::from("127.0.0.1"));
+
+  let loopback = IpAddr::V6(String::from("::1"));
+#+end_src
+
+게다가 Enum에서 변수 타입을 개별로 설정할 수 있어서 이런 경우엔 struct를 쓰는 것보다 편하다.
+
+#+begin_src rust
+  enum IpAddr {
+      V4(u8, u8, u8, u8),
+      V6(String),
+  }
+
+  let home = IpAddr::V4(127, 0, 0, 1);
+
+  let loopback = IpAddr::V6(String::from("::1"));
+#+end_src
+
+** Structs
+
+메서드는 ~impl~ 문을 이용하여 정의한다.
+
+#+begin_src rust :results output :exports both
+  #[derive(Debug)]
+  struct Person {
+      name: String,
+      age: u8,
+      tall: u8,
+  }
+
+  impl Person {
+      fn new(name: String, age: u8, tall: u8) -> Self {
+          Self {
+              name,
+              age,
+              tall
+          }
+      }
+  }
+
+  fn main() {
+      let me = Person {
+          name: "Phil Hwang".to_string(),
+          age: 44,
+          tall: 186
+      };
+
+      let you = Person::new("John Doe".to_string(), 23, 178);
+
+      println!("I am {:?}", me);
+      println!("You are {:?}", you);
+  }
+#+end_src
+
+#+RESULTS:
+: I am Person { name: "Phil Hwang", age: 44, tall: 186 }
+: You are Person { name: "John Doe", age: 23, tall: 178 }
+
+** Generic Types
+
+#+begin_src rust :results output :exports both
+  fn give_thing<T>(input: T) -> T {
+      input
+  }
+
+  fn main() {
+      let x = give_thing(String::from("Hello"));
+      let y = give_thing(345);
+
+      println!("{}", x);
+      println!("{}", y);
+  }
+#+end_src
+
+#+RESULTS:
+: Hello
+: 345
+
+좀 더 실용적인 예를 든다면, 입력 받은 제네릭한 값을 출력하는 경우를 생각해볼 수 있다.
+
+#+begin_src rust
+  fn compare_and_print(statement: ???, num_1: ???, num_2: ???) {
+      println!(
+          "{}! Is {} greater than {}? {}", 
+          statement, 
+          num_1, 
+          num_2, 
+          num_1 > num_2
+      );
+  }
+
+  fn main() {
+      compare_and_print("Listen up!", 9, 8);
+  }
+#+end_src
+
+#+begin_src rust :results output :exports both
+  use std::cmp::PartialOrd;
+  use std::fmt::Display;
+
+  fn compare_and_print<T: Display, U: Display + PartialOrd>(statement: T, num_1: U, num_2: U) {
+      println!(
+	  "{}! Is {} greater than {}? {}",
+	  statement,
+	  num_1,
+	  num_2,
+	  num_1 > num_2
+      );
+  }
+
+  fn main() {
+      compare_and_print("Listen up!", 9, 8);
+  }
+#+end_src
+
+#+RESULTS:
+: Listen up!! Is 9 greater than 8? true
+
+**팁**: ~compare_and_print~ 함수의 인자를 다음과 같이 표현할 수 도 있다.
+
+#+begin_src rust :results output
+  use std::cmp::PartialOrd;
+  use std::fmt::Display;
+
+  fn compare_and_print<T, U>(statement: T, num_1: U, num_2: U) 
+  where 
+        T: Display,
+        U: Display + PartialOrd,
+  {
+      println!(
+          "{}! Is {} greater than {}? {}",
+          statement,
+          num_1,
+          num_2,
+          num_1 > num_2
+      );
+  }
+
+  fn main() {
+      compare_and_print("Listen up!", 9, 8);
+  }
+#+end_src
+
+#+RESULTS:
+: Listen up!! Is 9 greater than 8? true
+
+* Loops
+
+** ~loop~
+- ~break~ 문을 이용하여 루프를 빠져나올 수 있다.
+- 루프별로 이름(tagging)을 줄 수 있다.
+
+#+begin_src rust :results output
+  #![allow(unused_labels)]
+  fn main() {
+      let mut i = 0;
+      let mut j = 0;
+
+      'outer: loop {
+          i += 1;
+          if i > 3 {
+              'inner: loop {
+                  j += 1;
+                  if j == 3 {
+                      break 'outer;
+                  }
+              }
+          }
+      }
+  }
+#+end_src
+
+#+RESULTS:
+
+** ~while~
+
+** ~for~
 
 * 사실들
 
