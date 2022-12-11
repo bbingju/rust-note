@@ -397,6 +397,53 @@ Enums는 C/C++와 같이 표현된다.
 #+RESULTS:
 : Listen up!! Is 9 greater than 8? true
 
+** VecDeque
+
+Ring buffer 이다.
+
+예를 들어, 아이템 개수가 60만개인 벡터에서 아이템을 낱개로 모두 삭제하려면 많은 시간이 걸린다.
+
+#+begin_src rust :results output :exports both
+  use std::time::Instant;
+
+  fn main() {
+      let mut big_vec = vec![0; 600_000];
+
+      let start = Instant::now();
+      for _i in 0..600_000 {
+          big_vec.remove(0);
+      }
+      let duration = start.elapsed();
+
+      println!("The time elapsed is {:?}", duration);
+  }
+#+end_src
+
+#+RESULTS:
+: The time elapsed is 31.383903273s
+
+이런 경우엔 ~VecDeque~ 를 사용하여 시간을 줄일 수 있다.
+
+#+begin_src rust :results output :exports both
+  use std::collections::VecDeque;
+  use std::time::Instant;
+
+  fn main() {
+      let mut big_vec = VecDeque::from(vec![0; 600_000]);
+
+      let start = Instant::now();
+      for _i in 0..600_000 {
+          big_vec.remove(0);
+      }
+      let duration = start.elapsed();
+
+      println!("The time elapsed is {:?}", duration);
+  }
+#+end_src
+
+#+RESULTS:
+: The time elapsed is 5.52107ms
+
 * Loops
 
 ** ~loop~
