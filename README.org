@@ -397,11 +397,20 @@ Enums는 C/C++와 같이 표현된다.
 #+RESULTS:
 : Listen up!! Is 9 greater than 8? true
 
+
+** HashMap & BTreeMap
+
+~BTreeMap~ 은 정렬가능한 ~HashMap~ 이라고 할 수 있다.
+
+** HashSet & BTreeSet
+
+** BinaryHeap
+
 ** VecDeque
 
-Ring buffer 이다.
+Ring buffer 이다.
 
-예를 들어, 아이템 개수가 60만개인 벡터에서 아이템을 낱개로 모두 삭제하려면 많은 시간이 걸린다.
+예를 들어, 아이템 개수가 60만개인 벡터에서 아이템을 낱개로 모두 삭제하려면 많은 시간이 걸린다.
 
 #+begin_src rust :results output :exports both
   use std::time::Instant;
@@ -422,7 +431,7 @@ Ring buffer 이다.
 #+RESULTS:
 : The time elapsed is 31.383903273s
 
-이런 경우엔 ~VecDeque~ 를 사용하여 시간을 줄일 수 있다.
+이런 경우엔 ~VecDeque~ 를 사용하여 시간을 줄일 수 있다.
 
 #+begin_src rust :results output :exports both
   use std::collections::VecDeque;
@@ -433,7 +442,8 @@ Ring buffer 이다.
 
       let start = Instant::now();
       for _i in 0..600_000 {
-          big_vec.remove(0);
+          // big_vec.remove(0);
+          big_vec.pop_front();
       }
       let duration = start.elapsed();
 
@@ -587,7 +597,7 @@ Ring buffer 이다.
 
 ** Traits
 
-다른 언어에서 interface라 일컬어지는 것과 비슷한 면이 있다. [[https://doc.rust-lang.org/book/ch10-02-traits.html][책]]참고.
+다른 언어에서 interface라 일컬어지는 것과 비슷한 면이 있다. [[https://doc.rust-lang.org/book/ch10-02-traits.html][책]] 참고.
 
 * Projects
 
@@ -602,7 +612,9 @@ Ring buffer 이다.
 ** [[https://github.com/ogham/exa][exa]]
 
 * See Also
-- [[https://doc.rust-lang.org/][Rust Documentations]] ([[https://doc.rust-lang.org/std/index.html][Standard Library References]])
+- [[https://doc.rust-lang.org/][Rust Documentations]]
+  + [[https://doc.rust-lang.org/std/index.html][Standard Library References]]
+  + [[https://rust-lang-nursery.github.io/rust-cookbook/][Rust Cookbook]]
 - [[https://play.rust-lang.org/][Rust Playground]]
 - [[https://dhghomon.github.io/easy_rust/][Easy Rust]] ([[https://github.com/Dhghomon/easy_rust][github]], [[https://www.youtube.com/watch?v=W9DO6m8JSSs&list=PLfllocyHVgsSJf1zO6k6o3SX2mbZjAqYE][youtube 한국어]])
 
