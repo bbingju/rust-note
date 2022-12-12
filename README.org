@@ -64,7 +64,7 @@ Emacs로 Rust 언어를 프로그래밍 하는 기본적인 방법은 [[https://
 * Data Types
 
 - Scalar와 compound로 나뉨.
-- Scalar는 한개짜리 값을 의미하는데, integers, floating-point numbers, Booleans, 문자열이 여기에 속함.
+- Scalar는 한개짜리 값을 의미하는데, integers, floating-point numbers, Booleans, 문자열 등이 여기에 속함.
 - Integer type에 ~isize~, ~usize~ 라는 것이 있음.
 - Integer literal은 다음과 같이 표기함
 
@@ -424,7 +424,7 @@ Ring buffer 이다.
       }
       let duration = start.elapsed();
 
-      println!("The time elapsed is {:?}", duration);
+      println!("Elapsed time: {:?}", duration);
   }
 #+end_src
 
@@ -447,7 +447,7 @@ Ring buffer 이다.
       }
       let duration = start.elapsed();
 
-      println!("The time elapsed is {:?}", duration);
+      println!("Elapsed time: {:?}", duration);
   }
 #+end_src
 
@@ -485,6 +485,46 @@ Ring buffer 이다.
 ** ~while~
 
 ** ~for~
+
+
+* Traits
+
+다른 언어에서 interface라 일컬어지는 것과 비슷한 면이 있다. [[https://doc.rust-lang.org/book/ch10-02-traits.html][책]] 참고.
+
+** 새로운 Trait 만들기
+
+#+begin_src rust :results output :exports both
+  struct Animal {
+      name: String,
+  }
+
+  trait Canine {
+      // default implementation
+      fn bark(&self) {
+          println!("Woof Woof");
+      }
+  }
+
+  impl Canine for Animal {
+      fn bark(&self) {
+          println!("My name is {}. 멍멍", self.name);
+      }
+  }
+
+  fn main() {
+      let my_animal = Animal {
+          name: "바둑이".to_string(),
+      };
+
+      my_animal.bark();
+  }
+#+end_src
+
+#+RESULTS:
+: My name is 바둑이. 멍멍
+
+** Examples
+*** AsRef
 
 * 사실들
 
@@ -595,9 +635,40 @@ Ring buffer 이다.
 : It's between 0 and 10. It's the number 10
 : It's greater than ten
 
-** Traits
+** 물음표 '~?~'의 쓰임새
 
-다른 언어에서 interface라 일컬어지는 것과 비슷한 면이 있다. [[https://doc.rust-lang.org/book/ch10-02-traits.html][책]] 참고.
+#+begin_src rust :results output :exports both
+  use std::num::ParseIntError;
+
+  fn parse_as_int(input: &str) -> Result<i32, ParseIntError> {
+      let parsed_number = input.parse::<i32>()?;
+      Ok(parsed_number)
+  }
+
+  fn main() {
+      for item in vec!["test", "3", "9342", "34.9"] {
+          let parsed = parse_as_int(item);
+          println!("{:?}", parsed);
+      }
+  }
+#+end_src
+
+#+RESULTS:
+: Err(ParseIntError { kind: InvalidDigit })
+: Ok(3)
+: Ok(9342)
+: Err(ParseIntError { kind: InvalidDigit })
+
+** [[https://doc.rust-lang.org/std/prelude/index.html][Prelude]]
+
+/prelude/ 는 Rust를 사용하는데 있어 기본적이고 사용빈도가 높은 모듈들을 정의하고 그것들을 ~use~ 문을 쓰지 않고 쓸 수 있게 만들어둔 것이다. 즉, 모든 Rust 프로그램에 자동으로 불러지는 것들의 목록이라 할 수 있다.
+
+** Option
+
+Rust에는 ~NULL~ 이 없다. 단지 nullable 포인터만 있는데 ~Option~ 이 그 기능을 한다. Prelude에 포함되어 있다.
+
+** ~if let~ & ~while let~
+** Turbofish
 
 * Projects
 
@@ -610,6 +681,13 @@ Ring buffer 이다.
 ** [[https://github.com/bootandy/dust][dust]]
 
 ** [[https://github.com/ogham/exa][exa]]
+
+* Crates
+
+** [[https://crates.io/crates/clap][clap]]
+
+Command Line Argument Parser.
+
 
 * See Also
 - [[https://doc.rust-lang.org/][Rust Documentations]]
