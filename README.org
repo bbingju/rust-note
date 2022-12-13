@@ -1,3 +1,4 @@
+# -*- mode: org; coding: utf-8 -*-
 #+TITLE: Rust Note
 #+AUTHOR: Phil Hwang
 #+EMAIL: pjhwang@gmail.com
@@ -522,6 +523,212 @@ Ring buffer 이다.
 
 #+RESULTS:
 : My name is 바둑이. 멍멍
+
+** Another Trait
+
+#+begin_src rust :results output :exports both
+  struct Monster {
+      health: i32,
+  }
+
+  struct Wizard {}
+  struct Ranger {}
+
+  trait FightClose {
+      fn attack_with_sword(&self, opponent: &mut Monster) {
+          opponent.health -= 10;
+          println!(
+              "Striked with your sword! The opponent's health is now {}",
+              opponent.health
+          );
+      }
+      fn attack_with_hand(&self, opponent: &mut Monster) {
+          opponent.health -= 2;
+          println!(
+              "Striked with your fist! The opponent's health is now {}",
+              opponent.health
+          );
+      }
+  }
+
+  impl FightClose for Wizard {}
+  impl FightClose for Ranger {}
+
+  trait FightFromDistance {
+      fn attack_with_bow(&self, opponent: &mut Monster, distance: i32) {
+          if distance < 10 {
+              opponent.health -= 10;
+              println!(
+                  "Attacked with a bow! The opponent's health is now {}",
+                  opponent.health
+              );
+          }
+      }
+      fn attack_with_rock(&self, opponent: &mut Monster, distance: i32) {
+          if distance < 3 {
+              opponent.health -= 4;
+              println!(
+                  "Attacked with a rock! The opponent's health is now {}",
+                  opponent.health
+              );
+          }
+      }
+  }
+
+  impl FightFromDistance for Ranger {}
+
+  fn main() {
+      let radagast = Wizard {};
+      let aragorn = Ranger {};
+
+      let mut uruk_hai = Monster { health: 40 };
+
+      radagast.attack_with_sword(&mut uruk_hai);
+      aragorn.attack_with_bow(&mut uruk_hai, 17);
+  }
+#+end_src
+
+#+RESULTS:
+: Striked with your sword! The opponent's health is now 30
+
+** Traits as bounds
+
+#+begin_src rust :results output :exports both
+  use std::fmt::Debug;
+
+  struct Monster {
+      health: i32,
+  }
+
+  #[derive(Debug)]
+  struct Wizard {
+      health: i32,
+  }
+
+  #[derive(Debug)]
+  struct Ranger {
+      health: i32,
+  }
+
+  trait Magic {}
+  trait FightClose {}
+  trait FightFromDistance {}
+
+  impl Magic for Wizard {}
+  impl FightClose for Ranger {}
+  impl FightClose for Wizard {}
+  impl FightFromDistance for Ranger {}
+
+  fn attack_with_bow<T>(character: &T, opponent: &mut Monster, distance: u32)
+  where
+      T: FightFromDistance + Debug,
+  {
+      if distance < 10 {
+          opponent.health -= 10;
+          println!(
+              "Attacked with a bow! The opponent's health is now {}. You are now at: {character:?}",
+              opponent.health
+          );
+      }
+  }
+
+  fn attack_with_sword<T>(character: &T, opponent: &mut Monster)
+  where
+      T: FightClose + Debug,
+  {
+      opponent.health -= 10;
+      println!(
+          "Striked with your sword! The opponent's health is now {}. You are now at: {character:?}",
+          opponent.health
+      );
+  }
+
+  fn fireball<T>(character: &T, opponent: &mut Monster, distance: u32)
+  where
+      T: Magic + Debug,
+  {
+      if distance < 15 {
+          opponent.health -= 20;
+          println!("You raise your hands and cast a fireball! Your opponent now has {} health left. You are now at: {character:?}", 
+                   opponent.health);
+      }
+  }
+
+  fn main() {
+      let radagast = Wizard { health: 60 };
+      let aragon = Ranger { health: 80 };
+
+      let mut uruk_hai = Monster { health: 40 };
+
+      attack_with_sword(&radagast, &mut uruk_hai);
+      attack_with_bow(&aragon, &mut uruk_hai, 7);
+      fireball(&radagast, &mut uruk_hai, 14);
+  }
+#+end_src
+
+#+RESULTS:
+: Striked with your sword! The opponent's health is now 30. You are now at: Wizard { health: 60 }
+: Attacked with a bow! The opponent's health is now 20. You are now at: Ranger { health: 80 }
+: You raise your hands and cast a fireball! Your opponent now has 0 health left. You are now at: Wizard { health: 60 }
+
+** Blanket Trait Implementations
+
+#+begin_src rust :results output :exports both
+  use std::fmt::Debug;
+
+  trait Prints: Debug {
+      fn prints_something(&self) {
+          println!("I am {:?}.", self);
+      }
+  }
+
+  #[derive(Debug)]
+  struct Person;
+
+  impl<T: Debug> Prints for T {}
+
+  fn main() {
+      let a_person = Person;
+      a_person.prints_something();
+
+      // let x = String::from("hello");
+      // x.prints_something();
+  }
+#+end_src
+
+#+RESULTS:
+: I am Person.
+
+혹은,
+
+#+begin_src rust :results output :exports both
+  use std::fmt::Debug;
+
+  trait Prints {
+      fn prints_something(&self)
+      where
+          Self: Debug,
+      {
+          println!("I am {:?}.", self);
+      }
+  }
+
+  #[derive(Debug)]
+  struct Person;
+
+  impl<T> Prints for T {}
+
+  fn main() {
+      let a_person = Person;
+      a_person.prints_something();
+
+      // let x = String::from("hello");
+      // x.prints_something();
+  }
+#+end_src
+
+#+RESULTS:
+: I am Person.
 
 ** Examples
 *** AsRef
