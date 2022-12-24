@@ -487,6 +487,36 @@ Ring buffer 이다.
 
 ** ~for~
 
+* Closures
+
+#+begin_src rust :results output :exports both
+  fn main() {
+      let number = 30;
+      let my_closure = |x: i32| println!("{}", x + number);
+
+      my_closure(3)
+  }
+#+end_src
+
+#+RESULTS:
+: 33
+
+벡터를 사용한 예.
+
+#+begin_src rust :results output :exports both
+  fn main() {
+      let my_vec = vec![2, 5, 3];
+
+      let double_vec = my_vec.iter()
+          .map(|number| number * 2)
+          .collect::<Vec<i32>>();
+
+      println!("{double_vec:?}");
+  }
+#+end_src
+
+#+RESULTS:
+: [4, 10, 6]
 
 * Traits
 
@@ -732,6 +762,71 @@ Ring buffer 이다.
 
 ** Examples
 *** AsRef
+*** Interator
+
+- ~iter()~:: 레퍼런스 만 할 경우 (~&T~)
+- ~iter_mut()~:: 수정할 수 있는 레퍼런스가 필요한 경우 (~&mut T~)
+- ~into_iter()~:: 사용한 것은 없애는 경우
+
+* Chaning Methods
+
+벡터에 순차적인 숫자를 넣은 자료구조를 만들려고 할 때, C언어 스타일로 짠다면 아래와 비슷.
+
+#+begin_src rust :results output :exports both
+  fn main() {
+      let mut vec = Vec::new();
+      let mut count = 1;
+
+      while count < 11 {
+          vec.push(count);
+          count += 1;
+      }
+
+      println!("{vec:?}");
+  }
+#+end_src
+
+#+RESULTS:
+: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+Rust 스타일은 다음과 같다.
+
+#+begin_src rust :results output :exports both
+  fn main() {
+      let vec1 = (1..=10).collect::<Vec<i32>>();
+      // or
+      let vec2 = (1..=10).collect::<Vec<_>>();
+
+      println!("{vec1:?}");
+      println!("{vec2:?}");
+  }
+#+end_src
+
+#+RESULTS:
+: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+
+여기서 벡터의 특정아이템에 접근하는 코드가 필요하다면 chaining methods를 이용할 수 있다.
+
+#+begin_src rust :results output :exports both
+  fn main() {
+      let vec = (1..=10).collect::<Vec<_>>();
+
+      let new_vec = vec
+          .into_iter()
+          .skip(2)
+          .skip(1)
+          .skip(1)
+          .take(5)
+          .collect::<Vec<_>>();
+
+      println!("{new_vec:?}");
+  }
+#+end_src
+
+#+RESULTS:
+: [5, 6, 7, 8, 9]
 
 * 사실들
 
@@ -890,6 +985,12 @@ Rust에는 ~NULL~ 이 없다. 단지 nullable 포인터만 있는데 ~Option~ �
 ** [[https://github.com/ogham/exa][exa]]
 
 * Crates
+
+라이브러리 이다. Cargo로 라이브러리 프로젝트를 생성하려면 ~--lib~ 옵션을 붙인다. 다음과 같이다 한다.
+
+#+begin_src shell
+  cargo new --lib <new_lib_proj>
+#+end_src
 
 ** [[https://crates.io/crates/clap][clap]]
 
