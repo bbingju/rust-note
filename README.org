@@ -85,13 +85,14 @@ Tuple은 괄호'~()~'를 사용한다.
 
 #+begin_src rust results: output :exports both
   fn main() {
-      let empty_tuple = ();		// 빈 투플
-      let my_tuple = ( 23, "test tuple", vec![34, 23, 9] );
+      let empty_tuple = (); // 빈 투플
+      let my_tuple = (23, "test tuple", vec![34, 23, 9]);
 
-      println!("empty tuple: {:?}, my_tuple.0: {:}, my_tuple.1: {:?}",
-               empty_tuple, my_tuple.0, my_tuple.1);
+      println!(
+          "empty tuple: {:?}, my_tuple.0: {:}, my_tuple.1: {:?}",
+          empty_tuple, my_tuple.0, my_tuple.1
+      );
   }
-
 #+end_src
 
 #+RESULTS:
@@ -488,7 +489,9 @@ Ring buffer 이다.
 ** ~for~
 
 * Iterators
-** ~rev~
+
+** Methods
+*** ~rev~
 
 Iterator의 진행방향을 뒤집는다.
 
@@ -515,9 +518,9 @@ Iterator의 진행방향을 뒤집는다.
 
 #+RESULTS:
 
-** ~any~
+*** ~any~
 
-** ~find~
+*** ~find~
 
 predicate를 만족하는 이터레이터 요소(element)를 찾는다. 다시말해 ~find~ 는 ~true~ 혹은 ~false~ 를 반환하는 클로저(closure)를 받아 객체가 가진 이터레이터 요소를 평가하고 해당 클로저가 true인 경우 ~Some(element)~ 를 반환하고 그 외에는 ~None~ 을 반환한다.
 
@@ -542,7 +545,7 @@ predicate를 만족하는 이터레이터 요소(element)를 찾는다. 다시�
 
 #+RESULTS:
 
-** ~cycle~
+*** ~cycle~
 
 #+begin_src rust :results output :exports both
   fn main() {
@@ -556,6 +559,96 @@ predicate를 만족하는 이터레이터 요소(element)를 찾는다. 다시�
 
 #+RESULTS:
 : [(0, "even"), (1, "odd"), (2, "even"), (3, "odd"), (4, "even")]
+
+*** ~take~ & ~skip~
+
+#+begin_src rust :results output :exports both
+  fn main() {
+      let ten_chars = ('a'..).take(10).collect::<Vec<_>>();
+      println!("{ten_chars:?}");
+
+      let ten_chars_after_skip = ('a'..).skip(300).take(10).collect::<Vec<_>>();
+      println!("{ten_chars_after_skip:?}");
+  }
+#+end_src
+
+#+RESULTS:
+: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j']
+: ['ƍ', 'Ǝ', 'Ə', 'Ɛ', 'Ƒ', 'ƒ', 'Ɠ', 'Ɣ', 'ƕ', 'Ɩ']
+
+*** ~fold~
+
+#+begin_src rust :exports both
+  fn main() {
+      let numbers = vec![4, 5, 1, 6, 7];
+
+      println!("{}", numbers.iter().sum::<i32>());
+
+      println!(
+          "{}",
+          numbers
+              .iter()
+              .fold(0, |total_so_far, next| total_so_far + next)
+      );
+  }
+#+end_src
+
+#+RESULTS:
+: 23
+: 23
+
+다른 예제.
+
+#+begin_src rust :exports both
+  fn main() {
+      let a_string = "I don't have any dashes.";
+
+      let dashed = a_string
+          .chars()
+          .fold('_'.to_string(), |mut string_so_far, next_char| {
+              string_so_far.push(next_char);
+              string_so_far.push('-');
+              string_so_far
+          });
+
+      println!("{dashed}");
+  }
+#+end_src
+
+#+RESULTS:
+: _I- -d-o-n-'-t- -h-a-v-e- -a-n-y- -d-a-s-h-e-s-.-
+
+또 다른 예제.
+
+#+begin_src rust :exports both
+  use std::cmp::max;
+
+  fn main() {
+      let numbers = vec![34, 8234, -123, 13483, 1634, -340123, 4382];
+
+      let biggest = numbers.iter().fold(
+          i32::MIN,
+          |bigger, &next| {
+              if bigger < next {
+                  next
+              } else {
+                  bigger
+              }
+          },
+      );
+
+      let another = numbers
+          .into_iter()
+          .fold(i32::MIN, |bigger, next| max(bigger, next));
+
+      println!("{biggest}");
+      println!("{another}");
+  }
+#+end_src
+
+#+RESULTS:
+: 13483
+: 13483
 
 * Closures
 
@@ -1005,7 +1098,7 @@ Rust 스타일은 다음과 같다.
   fn match_number(input: i32) {
       match input {
           number @ 0..=10 => println!("It's between 0 and 10. It's the number {}", number),
-          _ => println!("It's greater than ten" )
+          _ => println!("It's greater than ten"),
       }
   }
 
@@ -1057,12 +1150,14 @@ Rust에는 ~NULL~ 이 없다. 단지 nullable 포인터만 있는데 ~Option~ �
   fn main() {
       let some_output = Some(vec![0, 1, 3, 4, 9]);
 
-      let first = some_output.clone().map(|some_vec| some_vec.iter().map(|num| num + 1).collect::<Vec<_>>());
+      let first = some_output
+          .clone()
+          .map(|some_vec| some_vec.iter().map(|num| num + 1).collect::<Vec<_>>());
 
       let second = some_output.map(|some_vec| match some_vec.len() {
           0 => None,
           1 => Some(vec![some_vec[0]]),
-          _ => Some(some_vec)
+          _ => Some(some_vec),
       });
 
       println!("{first:?}");
@@ -1084,7 +1179,7 @@ Rust에는 ~NULL~ 이 없다. 단지 nullable 포인터만 있는데 ~Option~ �
       let second = some_output.and_then(|some_vec| match some_vec.len() {
           0 => None,
           1 => Some(vec![some_vec[0]]),
-          _ => Some(some_vec)
+          _ => Some(some_vec),
       });
 
       // ...
@@ -1103,11 +1198,13 @@ Rust에는 ~NULL~ 이 없다. 단지 nullable 포인터만 있는데 ~Option~ �
 
       // ...
 
-      let second = some_output.map(|some_vec| match some_vec.len() {
-          0 => None,
-          1 => Some(vec![some_vec[0]]),
-          _ => Some(some_vec)
-      }).flatten();
+      let second = some_output
+          .map(|some_vec| match some_vec.len() {
+              0 => None,
+              1 => Some(vec![some_vec[0]]),
+              _ => Some(some_vec),
+          })
+          .flatten();
 
       // ...
 
@@ -1136,7 +1233,7 @@ Rust에는 ~NULL~ 이 없다. 단지 nullable 포인터만 있는데 ~Option~ �
 ** Turbofish
 ** Toilet Closure
 
-~|_|~.
+~|_|~. 변기 같이 생겨서 붙여진 이름.
 
 ** ~ok_or~, ~ok_or_else~
 
